@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Monads.Test.Part4;
 
-static class IOMonadicFunctionExtensions
+static partial class IOMonadicFunctionExtensions
 {
     internal static IO<B> Apply<A, B>(this Func<A, IO<B>> f, IO<A> a) => 
         new IO<B>(() =>
@@ -70,6 +70,14 @@ public class MonadicApply
 
         Assert.Equal(3*2, result);
         Assert.Equal("I'm a side effect!I'm another side effect!", File.ReadAllText("output.txt"));
-
+    }
+    
+    [Fact]
+    void apply_with_LINQ()
+    {
+        // Eff<int> monadicResult =
+        //     from len in length("foo")
+        //     from d in double(len)
+        //     select d;
     }
 }
