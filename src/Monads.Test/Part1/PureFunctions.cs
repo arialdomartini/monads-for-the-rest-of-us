@@ -80,4 +80,28 @@ public class PureFunctions
         Console.SetOut(oldConsole);
     }
     
+/*    
+    | Case                                                                  | Example of type                           |
+    |-----------------------------------------------------------------------|-------------------------------------------|
+    | A function that depends (reads) an extra string parameter             | `string --[Reader<String>]--> int`        |
+    | A function that might raise an exception                              | `decimal -> decimal --[Error]--> decimal` |
+    | A function that also writes to the Console                            | `string[] --[IO]--> int`                  |
+    | A function that could fail to return a value                          | `string --[Maybe]--> int`                 |
+    | A function returning nondeterministic values                          | `string --[Nondeterministic]--> int`      |
+    | A function returning a value and also writing a double somewhere else | `string --[Writer<double>] --> int`       |
+    | A function which depends and updates a shared state                   | `string --[State<MyState>]--> int`        |
+*/
+
+/*
+    | Case                                                                  | Example of type                   |
+    |-----------------------------------------------------------------------|-----------------------------------|
+    | A function that depends (reads) an extra string parameter             | `string -> Reader<String, int>`   |
+    | A function that might raise an exception                              | `decimal -> Error<decimal>`       |
+    | A function that also writes to the Console                            | `string[] -> IO<int>`             |
+    | A function that could fail to return a value                          | `string -> Maybe<int>`            |
+    | A function returning nondeterministic values                          | `string -> Nondeterministic<int>` |
+    | A function returning a value and also writing a double somewhere else | `string -> Writer<double, int>`   |
+    | A function which depends and updates a shared state                   | `string -> State<MyState, int`    |
+*/
+    
 }
