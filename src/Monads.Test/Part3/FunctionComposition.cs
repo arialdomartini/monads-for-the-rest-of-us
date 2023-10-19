@@ -91,7 +91,6 @@ public class FunctionComposition
     }
 }
 
-
 static class FunctionCompositionExtensions
 {
     internal static Func<A, C> ComposedWith<A, B, C>(this Func<B, C> g, Func<A, B> f) => a => g(f(a));
