@@ -35,4 +35,17 @@ public class FunctionComposition
     // halfOf           :: int    -> decimal
     // lengthThenHalfOf :: string -> decimal
 
+    [Fact]
+    void function_composition()
+    {
+        Func<string, int> length = s => s.Length;
+        Func<int, decimal> halfOf = n => (decimal)n / 2;
+
+        // (int -> decimal) -> (string -> int) -> (string -> decimal)
+        Func<string, decimal> Compose(Func<int, decimal> f, Func<string, int> g) => s => f(g(s));
+        
+        Func<string, decimal> halfOfLength = Compose(halfOf, length);
+
+        Assert.Equal(1.5M, halfOfLength("foo"));
+    }
 }
