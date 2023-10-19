@@ -48,4 +48,6 @@ public class PureFunctions
 
         Assert.Throws<DivideByZeroException>(() => Divide(9M, 0M));
     }
+    
+    // (decimal | DivideByZeroException) Divide(decimal n, decimal d) => n / d;
 }
