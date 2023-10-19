@@ -30,4 +30,9 @@ public class FunctionComposition
 
         Assert.Equal(1.5M, halfTheLength);
     }
+    
+    // length           :: string -> int
+    // halfOf           :: int    -> decimal
+    // lengthThenHalfOf :: string -> decimal
+
 }
