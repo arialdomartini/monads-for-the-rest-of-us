@@ -67,13 +67,23 @@ public class FunctionApplication
 
         // this does not compile
         // f.Apply("foo", "bar");
+    }
+    
+    [Fact]
+    void manual_currying()
+    {
+        Func<string, Func<string, int>> f = s => z => s.Length + z.Length;
 
+        Assert.Equal(
+            f.Apply("foo").Apply("bar"),
+            f("foo")("bar"));
     }
 }
 
 static class FunctionExtensions
 {
-    internal static int Apply(this Func<string, int> f, string s) => f(s);
+    internal static int Apply<(this Func<string, int> f, string s) => f(s);
+    internal static B Apply<A,B>(this Func<A, B> f, A s) => f(s);
 }
 
 static class Log
