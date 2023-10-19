@@ -50,4 +50,12 @@ public class PureFunctions
     }
     
     // (decimal | DivideByZeroException) Divide(decimal n, decimal d) => n / d;
+    
+    // static double divide(int numerator, int denominator) throws ArithmeticException {
+    //         if (denominator == 0) {
+    //         throw new ArithmeticException("Denominator cannot be zero");
+    //     }
+    //     return (double) numerator / denominator;
+    // }
+
 }
