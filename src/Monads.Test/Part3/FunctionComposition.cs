@@ -48,4 +48,18 @@ public class FunctionComposition
 
         Assert.Equal(1.5M, halfOfLength("foo"));
     }
+    
+    [Fact]
+    void generic_function_composition()
+    {
+        Func<string, int> length = s => s.Length;
+        Func<int, decimal> halfOf = n => (decimal)n / 2;
+
+        // Compose :: (B -> C) -> (A -> B) -> (A -> C)
+        Func<A, C> Compose<A, B, C>(Func<B, C> g, Func<A, B> f) => a => g(f(a));
+        
+        Func<string, decimal> halfOfLength = Compose(halfOf, length);
+
+        Assert.Equal(1.5M, halfOfLength("foo"));
+    }
 }
