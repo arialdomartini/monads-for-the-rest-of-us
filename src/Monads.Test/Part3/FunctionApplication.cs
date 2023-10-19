@@ -40,9 +40,34 @@ public class FunctionApplication
         myLength.Apply("foo");
         myLength.Invoke("foo");
     }
+    
+    [Fact]
+    void extending_apply()
+    {
+        B Apply<A, B>(Func<A, B> f, A a)
+        {
+            Log.Information("Got a value {A}", a);
+            var b = f(a);
+            Log.Information("Returning a value {B}", b);
+            return b;
+        }
+        
+        Func<string, int> myLength = s => s.Length;
+
+        // also logs
+        var length = myLength.Apply("foo");
+
+        Assert.Equal(3, length);
+
+    }
 }
 
 static class FunctionExtensions
 {
     internal static int Apply(this Func<string, int> f, string s) => f(s);
+}
+
+static class Log
+{
+    internal static void Information<A>(string gotAValueA, A p1) { }
 }
