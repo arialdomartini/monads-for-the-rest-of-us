@@ -58,6 +58,15 @@ public class FunctionApplication
         var length = myLength.Apply("foo");
 
         Assert.Equal(3, length);
+    }
+    
+    [Fact]
+    void multiple_parameters()
+    {
+        Func<string, string, int> f = (s, z) => s.Length + z.Length;
+
+        // this does not compile
+        // f.Apply("foo", "bar");
 
     }
 }
