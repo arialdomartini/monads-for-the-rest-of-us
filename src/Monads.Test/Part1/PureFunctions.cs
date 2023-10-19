@@ -103,5 +103,4 @@ public class PureFunctions
     | A function returning a value and also writing a double somewhere else | `string -> Writer<double, int>`   |
     | A function which depends and updates a shared state                   | `string -> State<MyState, int`    |
 */
-    
 }
