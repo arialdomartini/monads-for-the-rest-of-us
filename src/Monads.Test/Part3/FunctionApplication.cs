@@ -82,11 +82,10 @@ public class FunctionApplication
 
 static class FunctionExtensions
 {
-    internal static int Apply<(this Func<string, int> f, string s) => f(s);
     internal static B Apply<A,B>(this Func<A, B> f, A s) => f(s);
 }
 
 static class Log
 {
-    internal static void Information<A>(string gotAValueA, A p1) { }
+    internal static void Information<A>(string s, A a) { }
 }
