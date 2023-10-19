@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Xunit;
 
 namespace Monads.Test.Part1;
@@ -58,4 +60,24 @@ public class PureFunctions
     //     return (double) numerator / denominator;
     // }
 
+    [Fact]
+    void functions_with_IO_side_effects_are_dishonest()
+    {
+        var oldConsole = Console.Out;
+        var output = new StringBuilder();
+        Console.SetOut(new StringWriter(output));
+        
+        int Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+            return 0;
+        }
+
+        Main(Array.Empty<string>());
+        
+        Assert.Equal("Hello, World!\r\n", output.ToString());
+        
+        Console.SetOut(oldConsole);
+    }
+    
 }
