@@ -62,4 +62,21 @@ public class FunctionComposition
 
         Assert.Equal(1.5M, halfOfLength("foo"));
     }
+    
+    [Fact]
+    void function_composition_as_an_extension_method()
+    {
+        Func<string, int> length = s => s.Length;
+        Func<int, decimal> halfOf = n => (decimal)n / 2;
+
+        Func<string, decimal> halfOfLength = halfOf.ComposedWith(length);
+
+        Assert.Equal(1.5M, halfOfLength.Apply("foo"));
+    }
+}
+
+
+static class FunctionCompositionExtensions
+{
+    internal static Func<A, C> ComposedWith<A, B, C>(this Func<B, C> g, Func<A, B> f) => a => g(f(a));
 }
