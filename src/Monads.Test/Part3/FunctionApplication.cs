@@ -35,6 +35,10 @@ public class FunctionApplication
         var length = myLength.Apply("foo");
 
         Assert.Equal(3, length);
+        
+        myLength("foo");
+        myLength.Apply("foo");
+        myLength.Invoke("foo");
     }
 }
 
