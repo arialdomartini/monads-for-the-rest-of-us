@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Monads.Test.Part1;
@@ -35,5 +36,16 @@ public class PureFunctions
 
         b = "wat?";
         Assert.Equal(7, Closure("foo"));
+    }
+    
+    [Fact]
+    void exceptions_make_functions_dishonest()
+    {
+        decimal Divide(decimal n, decimal d) => n / d;
+
+        Assert.Equal(3M, Divide(9M, 3M));
+        Assert.Equal(4.5M, Divide(9M, 2M));
+
+        Assert.Throws<DivideByZeroException>(() => Divide(9M, 0M));
     }
 }
