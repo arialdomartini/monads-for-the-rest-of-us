@@ -43,6 +43,7 @@ public class PureFunctions
     [Fact]
     void exceptions_make_functions_dishonest()
     {
+        // decimal 
         decimal Divide(decimal n, decimal d) => n / d;
 
         Assert.Equal(3M, Divide(9M, 3M));
@@ -78,6 +79,8 @@ public class PureFunctions
         Assert.Equal("Hello, World!\r\n", output.ToString());
         
         Console.SetOut(oldConsole);
+        
+        
     }
     
 /*    
