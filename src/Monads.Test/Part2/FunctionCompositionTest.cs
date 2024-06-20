@@ -1,16 +1,19 @@
 ﻿using System;
 using System.IO;
+using Monads.Test.Part4;
 using Xunit;
 
 namespace Monads.Test.Part2;
 
 record IO<B>(Func<B> f);
 
-public class FunctionCompositionTest
+public class FunctionCompositionTest : IDisposable
 {
-    public FunctionCompositionTest()
+    private readonly string _someFile = TestHelper.RandomFileName();
+
+    void IDisposable.Dispose()
     {
-        File.Delete("output.txt");
+        _someFile.Delete();
     }
 
     [Fact]
@@ -19,14 +22,14 @@ public class FunctionCompositionTest
         // string -> int
         int LengthWithSideEffects(string s)
         {
-            File.WriteAllText("output.txt", "I'm a side effect!");
+            File.WriteAllText(_someFile, "I'm a side effect!");
             return s.Length;
         }
 
         var length = LengthWithSideEffects("foo");
 
         Assert.Equal(3, length);
-        Assert.Equal("I'm a side effect!", File.ReadAllText("output.txt"));
+        Assert.Equal("I'm a side effect!", File.ReadAllText(_someFile));
     }
 
     [Fact]
@@ -36,7 +39,7 @@ public class FunctionCompositionTest
         {
             return new IOMonad<int>(() =>
             {
-                File.WriteAllText("output.txt", "I'm a side effect!");
+                File.WriteAllText(_someFile, "I'm a side effect!");
                 return s.Length;
             });
         }
@@ -50,7 +53,7 @@ public class FunctionCompositionTest
         var length = monadicLength.Run();
 
         Assert.Equal(3, length);
-        Assert.Equal("I'm a side effect!", File.ReadAllText("output.txt"));
+        Assert.Equal("I'm a side effect!", File.ReadAllText(_someFile));
     }
 
     [Fact]
@@ -62,8 +65,7 @@ public class FunctionCompositionTest
 
         int length = Apply(Double, Apply(Length, "foo"));
 
-        Assert.Equal(3, length);
-        Assert.Equal("I'm a side effect!", File.ReadAllText("output.txt"));
+        Assert.Equal(6, length);
     }
 
     B Apply<A, B>(Func<A, B> f, A a)
@@ -97,7 +99,7 @@ public class FunctionCompositionTest
         IOMonad<int> LengthWithSideEffects(string s) =>
             new IOMonad<int>(() =>
             {
-                File.WriteAllText("output.txt", "I'm a side effect!");
+                File.WriteAllText(_someFile, "I'm a side effect!");
                 return s.Length;
             });
 
@@ -124,7 +126,7 @@ public class FunctionCompositionTest
         // Assert.Equal(3, length);
         
         // this fails
-        // Assert.Equal("I'm a side effect!", File.ReadAllText("output.txt"));
+        // Assert.Equal("I'm a side effect!", File.ReadAllText(_someFile));
     }
     
     // Argument type `IO<int>` is not assignable to parameter type `int`

@@ -13,7 +13,7 @@ public class PureFunctions
     {
         int Double(int i) => i * 2;
 
-        Dictionary<int, int> Codomain = new Dictionary<int, int>
+        Dictionary<int, int> codomain = new Dictionary<int, int>
         {
             [-1] = -2,
             [0] = 0,
@@ -22,9 +22,9 @@ public class PureFunctions
             [3] = 6,
         };
         
-        Assert.Equal(Double(2), Codomain[2]);
-        Assert.Equal(Double(3), Codomain[3]);
-        Assert.Equal(Double(-1), Codomain[-1]);
+        Assert.Equal(Double(2), codomain[2]);
+        Assert.Equal(Double(3), codomain[3]);
+        Assert.Equal(Double(-1), codomain[-1]);
     }
     
     [Fact]

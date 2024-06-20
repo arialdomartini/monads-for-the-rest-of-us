@@ -7,19 +7,24 @@ namespace Monads.Test.Part4;
 static partial class IOMonadicFunctionExtensions
 {
     internal static IO<B> Apply<A, B>(this Func<A, IO<B>> f, IO<A> a) => 
-        new IO<B>(() =>
-        {
-            A aResult = a.Run();
-            IO<B> bResult = f(aResult);
-            return bResult.Run();
-        });
+        new(() => f(a.Run()).Run());
+
+    internal static Func<IO<A>, IO<B>> Bind<A, B>(this Func<A, IO<B>> f) => a =>
+            new(() => f(a.Run()).Run());
 }
 
-public class MonadicApply
+public class MonadicApply : IDisposable
 {
+    private readonly string _someFile;
+
     public MonadicApply()
     {
-        File.Delete("output.txt");
+        _someFile = TestHelper.RandomFileName();
+    }
+
+    void IDisposable.Dispose()
+    {
+        _someFile.Delete();
     }
     
     [Fact]
@@ -37,7 +42,7 @@ public class MonadicApply
 
         Assert.Equal(6, doubleTheLength);
     }
-    
+
     [Fact]
     void monadic_apply()
     {
@@ -49,14 +54,14 @@ public class MonadicApply
         Func<string, IO<int>> length = s =>
             new IO<int>(() =>
             {
-                File.WriteAllText("output.txt", "I'm a side effect!");
+                File.WriteAllText(_someFile, "I'm a side effect!");
                 return s.Length;
             });
 
         Func<int, IO<double>> @double = n =>
             new IO<double>(() =>
             {
-                File.AppendAllText("output.txt", "I'm another side effect!");
+                File.AppendAllText(_someFile, "I'm another side effect!");
                 return n * 2;
             });
 
@@ -64,14 +69,43 @@ public class MonadicApply
         IO<double> monadicResult = @double.Apply(monadicLength);
 
         // Indeed, no file has been created yet
-        Assert.False(File.Exists("output.txt"));
+        Assert.False(File.Exists(_someFile));
 
         var result = monadicResult.Run();
 
-        Assert.Equal(3*2, result);
-        Assert.Equal("I'm a side effect!I'm another side effect!", File.ReadAllText("output.txt"));
+        Assert.Equal(3 * 2, result);
+        Assert.Equal("I'm a side effect!I'm another side effect!", File.ReadAllText(_someFile));
     }
-    
+
+    [Fact]
+    void monadic_apply_as_combinator()
+    {
+        Func<string, IO<int>> length = s =>
+            new IO<int>(() =>
+            {
+                File.WriteAllText(_someFile, "I'm a side effect!");
+                return s.Length;
+            });
+
+        Func<int, IO<double>> @double = n =>
+            new IO<double>(() =>
+            {
+                File.AppendAllText(_someFile, "I'm another side effect!");
+                return n * 2;
+            });
+
+        IO<int> monadicLength = length("foo");
+        IO<double> monadicResult = @double.Apply(monadicLength);
+
+        // Indeed, no file has been created yet
+        Assert.False(File.Exists(_someFile));
+
+        var result = monadicResult.Run();
+
+        Assert.Equal(3 * 2, result);
+        Assert.Equal("I'm a side effect!I'm another side effect!", File.ReadAllText(_someFile));
+    }
+
     [Fact]
     void apply_with_LINQ()
     {
@@ -80,4 +114,5 @@ public class MonadicApply
         //     from d in double(len)
         //     select d;
     }
+
 }

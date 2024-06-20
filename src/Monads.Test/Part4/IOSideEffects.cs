@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace Monads.Test.Part4;
@@ -8,21 +10,64 @@ record IO<B>(Func<B> f)
 {
     internal B Run() => f();
 }
-
-public class IOSideEffects
+static class IOExtensions
 {
-    public IOSideEffects()
+    internal static Func<IO<A>, IO<B>> Map<A, B>(this Func<A, B> f) =>
+        ioa => new IO<B>(() => f(ioa.Run()));
+ 
+    internal static IO<B> Map<A, B>(this IO<A> ioa, Func<A, B> f) =>
+        f.Map()(ioa);
+    
+    internal static Func<IO<A>, IO<B>> Map2<A, B>(this Func<A, B> f) =>
+        ioa => new IO<B>(() => f(ioa.Run()));
+}
+
+public class IOSideEffects : IDisposable
+{
+    private readonly string _someFile = TestHelper.RandomFileName();
+
+    void IDisposable.Dispose()
     {
-        File.Delete("output.txt");
+        _someFile.Delete();
     }
     
+    [Fact]
+    void map_test()
+    {
+        var io = new IO<string>(() =>
+        {
+            File.WriteAllText(_someFile, "I'm a side effect");
+            return "foo";
+        });
+
+        Func<string, int> length = s => s.Length;
+        {
+            var lengthM = length.Map();
+
+            var l = lengthM(io);
+            
+            var result = l.Run();
+            Assert.Equal(3, result);
+            Assert.Equal("I'm a side effect", File.ReadAllText(_someFile));
+        }
+        {
+            List<string> s = new List<string>();
+            s.Select(length);
+            IO<int> l = io.Map(length);
+            
+            var result = l.Run();
+            Assert.Equal(3, result);
+            Assert.Equal("I'm a side effect", File.ReadAllText(_someFile));
+        }
+    }
+
     [Fact]
     void running_the_IO_monad()
     {
         IO<int> CalculateWithSideEffect(string s) =>
             new IO<int>(() =>
             {
-                File.WriteAllText("output.txt", "I'm a side effect!");
+                File.WriteAllText(_someFile, "I'm a side effect!");
                 return s.Length;
             });
 
@@ -30,15 +75,15 @@ public class IOSideEffects
         IO<int> monadicValue = CalculateWithSideEffect("foo");
 
         // Indeed, no file has been created yet
-        Assert.False(File.Exists("output.txt"));
+        Assert.False(File.Exists(_someFile));
 
         // Finally, the IO monadic value is run
         var result = monadicValue.Run();
 
         Assert.Equal(3, result);
-        Assert.Equal("I'm a side effect!", File.ReadAllText("output.txt"));
+        Assert.Equal("I'm a side effect!", File.ReadAllText(_someFile));
     }
-    
+
     /*
 Eff<int> Computation1() => ...
 Eff<int> Computation2() => ...
@@ -85,5 +130,4 @@ IEnumerable<int> result =
     select value2;
 
 */
-    
 }
