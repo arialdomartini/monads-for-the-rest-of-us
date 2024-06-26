@@ -11,9 +11,9 @@ public class PureFunctions
     [Fact]
     void functions_are_equivalent_to_dictionaries()
     {
-        int Double(int i) => i * 2;
+        int Twice(int i) => i * 2;
 
-        Dictionary<int, int> codomain = new Dictionary<int, int>
+        var codomain = new Dictionary<int, int>
         {
             [-1] = -2,
             [0] = 0,
@@ -22,9 +22,9 @@ public class PureFunctions
             [3] = 6,
         };
         
-        Assert.Equal(Double(2), codomain[2]);
-        Assert.Equal(Double(3), codomain[3]);
-        Assert.Equal(Double(-1), codomain[-1]);
+        Assert.Equal(Twice(2), codomain[2]);
+        Assert.Equal(Twice(3), codomain[3]);
+        Assert.Equal(Twice(-1), codomain[-1]);
     }
     
     [Fact]
@@ -79,8 +79,6 @@ public class PureFunctions
         Assert.Equal("Hello, World!\r\n", output.ToString());
         
         Console.SetOut(oldConsole);
-        
-        
     }
     
 /*    
