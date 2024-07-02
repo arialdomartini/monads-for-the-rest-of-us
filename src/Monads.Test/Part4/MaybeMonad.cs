@@ -1,9 +1,13 @@
 using System;
 using Xunit;
+// ReSharper disable InconsistentNaming
+// ReSharper disable RedundantLambdaParameterType
+// ReSharper disable PatternAlwaysMatches
+#pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
 
-namespace Monads.Test.Part4Maybe;
+namespace Monads.Test.Part4;
 
-abstract record Maybe<A>{
+internal abstract record Maybe<A>{
     internal B Run<B>(Func<A, B> just, Func<B> nothing) =>
         this switch
         {
@@ -16,7 +20,7 @@ internal static class MaybeExtensions
 {
     internal static Func<Maybe<A>, Maybe<B>> Bind<A, B>(this Func<A, Maybe<B>> f) => (Maybe<A> a) =>
         a.Run(
-            just: a => f(a),
+            just: f,
             nothing: () => new Nothing<B>());
 
     internal static Func<Maybe<A>, Maybe<B>> Map<A, B>(this Func<A, B> f) =>
@@ -26,7 +30,7 @@ internal static class MaybeExtensions
                 nothing: () => new Nothing<B>());
 
     internal static Maybe<B> Map<A, B>(this Maybe<A> maybeA, Func<A, B> f) =>
-        f.Map()(maybeA);
+        Map(f)(maybeA);
 
 }
 
@@ -43,7 +47,7 @@ public class MaybeMonadTest
 
         Func<string, int> length = s => s.Length;
 
-        Func<Maybe<string>,Maybe<int>> lengthF = length.Map();
+        Func<Maybe<string>,Maybe<int>> lengthF = MaybeExtensions.Map(length);
 
         var maybeLength = lengthF(maybeAString);
 

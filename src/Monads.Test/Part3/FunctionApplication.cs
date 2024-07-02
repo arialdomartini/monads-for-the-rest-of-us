@@ -1,5 +1,6 @@
 ﻿using System;
 using Xunit;
+// ReSharper disable InconsistentNaming
 
 namespace Monads.Test.Part3;
 
@@ -55,7 +56,7 @@ public class FunctionApplication
         Func<string, int> myLength = s => s.Length;
 
         // also logs
-        var length = myLength.Apply("foo");
+        var length = Apply(myLength, "foo");
 
         Assert.Equal(3, length);
     }
@@ -87,5 +88,8 @@ static class FunctionExtensions
 
 static class Log
 {
-    internal static void Information<A>(string s, A a) { }
+    internal static void Information<A>(string s, A a)
+    {
+        // here the logging logic
+    }
 }

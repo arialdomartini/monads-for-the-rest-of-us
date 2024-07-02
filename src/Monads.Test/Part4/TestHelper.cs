@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Monads.Test.Part4;
 
-static class TestHelper
+internal static class TestHelper
 {
     internal static string RandomFileName() => 
         Guid.NewGuid().ToString();

@@ -2,10 +2,20 @@
 using System.IO;
 using Monads.Test.Part4;
 using Xunit;
+// ReSharper disable InconsistentNaming
+// ReSharper disable ArrangeObjectCreationWhenTypeEvident
+// ReSharper disable MoveLocalFunctionAfterJumpStatement
 
 namespace Monads.Test.Part2;
 
-record IO<B>(Func<B> f);
+internal record IO<A>(Func<A> action)
+{
+    internal A Run()
+    {
+        var output = action.Invoke();
+        return output;
+    }
+}
 
 public class FunctionCompositionTest : IDisposable
 {
@@ -35,21 +45,16 @@ public class FunctionCompositionTest : IDisposable
     [Fact]
     void length_monadic()
     {
-        IOMonad<int> Length(string s)
+        IO<int> Length(string s)
         {
-            return new IOMonad<int>(() =>
+            return new IO<int>(() =>
             {
                 File.WriteAllText(_someFile, "I'm a side effect!");
                 return s.Length;
             });
         }
 
-        int Double(int i)
-        {
-            return i * 2;
-        }
-
-        IOMonad<int> monadicLength = Length("foo");
+        IO<int> monadicLength = Length("foo");
         var length = monadicLength.Run();
 
         Assert.Equal(3, length);
@@ -61,9 +66,9 @@ public class FunctionCompositionTest : IDisposable
     {
         int Length(string s) => s.Length;
 
-        int Double(int i) => i * 2;
+        int Twice(int i) => i * 2;
 
-        int length = Apply(Double, Apply(Length, "foo"));
+        int length = Apply(Twice, Apply(Length, "foo"));
 
         Assert.Equal(6, length);
     }
@@ -82,13 +87,14 @@ public class FunctionCompositionTest : IDisposable
 
         Assert.Equal(3, length);
     }
+    
     [Fact]
     void two_function_application()
     {
         int Length(string s) => s.Length;
-        int Double(int s) => s *2;
+        int Twice(int s) => s *2;
 
-        int length = Apply(Double, Apply(Length, "foo"));
+        int length = Apply(Twice, Apply(Length, "foo"));
 
         Assert.Equal(6, length);
     }
@@ -96,31 +102,31 @@ public class FunctionCompositionTest : IDisposable
     [Fact]
     void to_monadic_function()
     {
-        IOMonad<int> LengthWithSideEffects(string s) =>
-            new IOMonad<int>(() =>
+        IO<int> LengthWithSideEffects(string s) =>
+            new IO<int>(() =>
             {
                 File.WriteAllText(_someFile, "I'm a side effect!");
                 return s.Length;
             });
 
-        IOMonad<string> Return(string s)
+        IO<string> Return(string s)
         {
-            return new IOMonad<string>(() =>s);
+            return new IO<string>(() =>s);
         }
 
         // (A -> IO<B>) -> IO<A> -> IO<B>
-        IOMonad<B> Apply<A, B>(Func<A, IOMonad<B>> f, IOMonad<A> value)
+        IO<B> Apply<A, B>(Func<A, IO<B>> f, IO<A> value)
         {
-            return new IOMonad<B>(() =>
+            return new IO<B>(() =>
             {
                 A a = value.Run();
-                IOMonad<B> bMonadic = f(a);
+                IO<B> bMonadic = f(a);
                 return bMonadic.Run();
             });
         }
         
         // length >>= return "foo";
-        IOMonad<int> length = Apply(LengthWithSideEffects, Return("foo"));
+        IO<int> length = Apply(LengthWithSideEffects, Return("foo"));
 
         // does not compile
         // Assert.Equal(3, length);
@@ -130,14 +136,4 @@ public class FunctionCompositionTest : IDisposable
     }
     
     // Argument type `IO<int>` is not assignable to parameter type `int`
-}
-
-
-record IOMonad<A>(Func<A> action)
-{
-    public A Run()
-    {
-        var output = action.Invoke();
-        return output;
-    }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Xunit;
+// ReSharper disable ArrangeTypeModifiers
+// ReSharper disable InconsistentNaming
+// ReSharper disable SuggestVarOrType_Elsewhere
+// ReSharper disable ArrangeObjectCreationWhenTypeEvident
 
 namespace Monads.Test.Part4;
 
@@ -12,12 +14,9 @@ record IO<B>(Func<B> f)
 }
 static class IOExtensions
 {
-    internal static Func<IO<A>, IO<B>> Map<A, B>(this Func<A, B> f) =>
-        ioa => new IO<B>(() => f(ioa.Run()));
- 
     internal static IO<B> Map<A, B>(this IO<A> ioa, Func<A, B> f) =>
-        f.Map()(ioa);
-    
+        new IO<B>(() => f(ioa.Run()));
+ 
     internal static Func<IO<A>, IO<B>> Map2<A, B>(this Func<A, B> f) =>
         ioa => new IO<B>(() => f(ioa.Run()));
 }
@@ -41,8 +40,9 @@ public class IOSideEffects : IDisposable
         });
 
         Func<string, int> length = s => s.Length;
+        
         {
-            var lengthM = length.Map();
+            var lengthM = length.Map2();
 
             var l = lengthM(io);
             
@@ -50,9 +50,8 @@ public class IOSideEffects : IDisposable
             Assert.Equal(3, result);
             Assert.Equal("I'm a side effect", File.ReadAllText(_someFile));
         }
+        
         {
-            List<string> s = new List<string>();
-            s.Select(length);
             IO<int> l = io.Map(length);
             
             var result = l.Run();

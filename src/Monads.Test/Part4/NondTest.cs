@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+// ReSharper disable ArrangeTypeModifiers
+// ReSharper disable InconsistentNaming
 
-namespace Monads.Test.Part4Nond;
+namespace Monads.Test.Part4;
 
 static class NondExtensions
 {
@@ -28,7 +30,7 @@ public class NondTest
 
         Func<string, int> length = s => s.Length;
 
-        var lengthM = length.Map();
+        var lengthM = NondExtensions.Map(length);
 
         var results = lengthM(nondeterministicString).Run();
         

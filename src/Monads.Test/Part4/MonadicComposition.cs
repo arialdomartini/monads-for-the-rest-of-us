@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Xunit;
+// ReSharper disable InconsistentNaming
+// ReSharper disable ArrangeTypeMemberModifiers
 
 namespace Monads.Test.Part4;
 
@@ -28,6 +31,7 @@ static partial class IOMonadicFunctionExtensions
     }
 }
 
+[SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize")]
 public class MonadicComposition : IDisposable
 {
     private readonly string _someFile = TestHelper.RandomFileName();

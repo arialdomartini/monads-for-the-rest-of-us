@@ -1,5 +1,7 @@
 ﻿using System;
 using Xunit;
+// ReSharper disable ConvertToLocalFunction
+// ReSharper disable InconsistentNaming
 
 namespace Monads.Test.Part3;
 

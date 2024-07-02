@@ -8,6 +8,8 @@ namespace Monads.Test.Part1;
 
 public class PureFunctions
 {
+    private const int Ok = 0;
+
     [Fact]
     void functions_are_equivalent_to_dictionaries()
     {
@@ -68,14 +70,15 @@ public class PureFunctions
         var output = new StringBuilder();
         Console.SetOut(new StringWriter(output));
         
-        int Main(string[] args)
+        int Main(string[] _)
         {
             Console.WriteLine("Hello, World!");
-            return 0;
+            return Ok;
         }
 
-        Main(Array.Empty<string>());
-        
+        var result = Main([]);
+
+        Assert.Equal(Ok, result);
         Assert.Equal("Hello, World!\r\n", output.ToString());
         
         Console.SetOut(oldConsole);
